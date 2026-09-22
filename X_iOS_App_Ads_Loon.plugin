@@ -1,0 +1,21 @@
+#!name=X iOS App 去广告（实验版）
+#!desc=过滤 X/Twitter 官方 iOS App 可被 Loon 解密的 GraphQL / Timeline 推广内容。为避免证书绑定导致 App 首页无法加载，本插件故意不对 api.twitter.com 开启 MITM。
+#!author=OpenAI（Loon 适配） / 过滤脚本来源 fkhb90
+#!homepage=https://github.com/fkhb90/Surge
+#!system=iOS, iPadOS
+#!date=2026-09-23
+
+# 说明：
+# 1. 过滤脚本基于 fkhb90/x_ads_blocker.js v2.4.2。
+# 2. 固定到 2026-09-10 的提交，避免远程脚本未来变化导致行为突然改变。
+# 3. 不要自行把 api.twitter.com 加入 [MITM]：
+#    X iOS App 对该域名可能启用 certificate pinning，MITM 后可能导致首页时间线无法加载。
+# 4. 如果 X 当前版本的首页流量全部只走 api.twitter.com，则 Loon 无法修改该响应，本插件也无法去掉这部分广告。
+
+[Script]
+http-response ^https?:\/\/([^\/]+\.)?((x|twitter)\.com|albtls\.t\.co)(\/i)?(\/api)?\/graphql\/ script-path=https://raw.githubusercontent.com/fkhb90/Surge/4ac0c8e31b7228f878809909c546cd822d966243/x_ads_blocker.js, requires-body=true, max-size=4194304, timeout=8, tag=X App GraphQL 去广告
+
+http-response ^https?:\/\/([^\/]+\.)?(x|twitter)\.com\/2\/timeline\/ script-path=https://raw.githubusercontent.com/fkhb90/Surge/4ac0c8e31b7228f878809909c546cd822d966243/x_ads_blocker.js, requires-body=true, max-size=4194304, timeout=8, tag=X App Timeline 去广告
+
+[MITM]
+hostname = x.com, www.x.com, mobile.x.com, api.x.com, twitter.com, www.twitter.com, mobile.twitter.com, albtls.t.co
